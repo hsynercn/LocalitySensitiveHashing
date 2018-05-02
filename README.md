@@ -1,2 +1,2 @@
 # LocalitySensitiveHashing
-Char string mayhem
+Char array mayhem
