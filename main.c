@@ -20,8 +20,6 @@ int main(int argc, char **argv)
         printf("Program execution halted due to invalid input string.");
     }
     
-    //outputBuffer = *outputBufferPointer;
-    
     long int filteredTextSize = 0;
     char temp2 = 't';
     char *filteredBuffer = &temp2;
