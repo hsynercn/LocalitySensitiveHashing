@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 struct MY_HASH_MAP *newMyHashMap()
 {
     struct MY_HASH_MAP *myHashMap = malloc (sizeof (struct MY_HASH_MAP));
@@ -25,7 +26,7 @@ struct MY_HASH_MAP *newMyHashMap()
     myHashMap->keys = malloc(myHashMap->hashMapSize * sizeof(int));
     for(int i=0;i<myHashMap->hashMapSize;i++)
     {
-        myHashMap->keys[i] = -1;
+        myHashMap->keys[i] = EMPTY_KEY;
     }
     
     for(int i=0;i<myHashMap->hashMapSize;i++)
@@ -33,4 +34,97 @@ struct MY_HASH_MAP *newMyHashMap()
         printf(">slt:%d k:%d v:%s\n",i,myHashMap->keys[i],myHashMap->values[i]);
     }
     return myHashMap;
+}
+
+int strLen(char* string)
+{
+    if(string==NULL)
+    {
+        return 1;
+    }
+    int len = 0;
+    while (string[len] != '\0')
+    {
+        len++;
+    }
+    return len;
+}
+
+long int stringToNum(char* string)
+{
+    int len = strLen(string);
+    if(len<0)
+    {
+        return len; 
+    }
+    long int val = 0;
+    for(int i=0;i<len;i++)
+    {
+        val = val*10 + string[i];
+    }
+    return val;
+}
+
+int getHashValue(char* string)
+{
+    return stringToNum(string)%SHINGLE_SET_MAP_SIZE;
+}
+
+int long insert(char* string, struct MY_HASH_MAP *myHashMap)
+{
+    int len = strLen(string);
+    long int slotNum = getHashValue(string)%SHINGLE_SET_MAP_SIZE;
+    if(myHashMap->keys[slotNum] == EMPTY_KEY)
+    {
+        //one shot one kill
+        if(len>SHINGLE_MAX_STR_LEN)
+        {
+            printf("Can't insert the value, exceeds SHINGLE_MAX_STR_LEN.");
+            return CANT_INSERT_LONG_STR;
+        }
+        myHashMap->keys[slotNum] = slotNum;
+        strncpy(myHashMap->values[slotNum], string, len);
+        return slotNum;
+    }
+    else
+    {
+        int isInserted = -1;
+        long int slotIterator = slotNum;
+        while(isInserted==-1 && slotIterator<SHINGLE_SET_MAP_SIZE)
+        {
+            int test = myHashMap->keys[slotIterator%SHINGLE_SET_MAP_SIZE];
+            if(myHashMap->keys[slotIterator%SHINGLE_SET_MAP_SIZE] == EMPTY_KEY)
+            {
+                
+                if(len>SHINGLE_MAX_STR_LEN)
+                {
+                    printf("Can't insert the value, exceeds SHINGLE_MAX_STR_LEN.");
+                    return CANT_INSERT_LONG_STR;
+                }
+                myHashMap->keys[slotIterator%SHINGLE_SET_MAP_SIZE] = slotIterator%SHINGLE_SET_MAP_SIZE;
+                strncpy(myHashMap->values[slotIterator%SHINGLE_SET_MAP_SIZE], string, len);
+                isInserted = 1;
+            }
+            else
+            {
+                //printf("DEBUG>%s\n",myHashMap->values[slotIterator%SHINGLE_SET_MAP_SIZE]);
+                if(strcmp(string, myHashMap->values[slotIterator%SHINGLE_SET_MAP_SIZE]))
+                {
+                    return CANT_INSERT_VALUE_IN_SET;
+                }
+            }
+            slotIterator++;
+        }
+        
+        if(isInserted==1)
+        {
+            return (slotIterator--)%SHINGLE_SET_MAP_SIZE;
+        }
+        
+        if(slotIterator>=SHINGLE_SET_MAP_SIZE)
+        {
+            return CANT_INSERT_MAP_FULL;
+        }
+        return CANT_INSERT_UNKOWN_ERROR;
+    }
 }

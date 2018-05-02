@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "InputUtil.h"
 #include "PoorMansHashTable.h"
-
-
 
 int main(int argc, char **argv)
 {
@@ -34,6 +33,10 @@ int main(int argc, char **argv)
     
     struct MY_HASH_MAP *shingleSet = newMyHashMap();
     
+    printf("test>%lu",getHashValue("test"));
+    
+    int long isFist = insert("yippe", shingleSet);
+    int long isSec = insert("yippe",shingleSet);
     
     return 0;
 }
