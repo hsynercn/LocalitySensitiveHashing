@@ -24,6 +24,7 @@ void readInputFile(char *fineName, long int *outputTextSize, char **outputBuffer
     
     *outputTextSize = size;
     *outputBufferPointer = buffer;
+    fclose(fp);
     return;
 }
 

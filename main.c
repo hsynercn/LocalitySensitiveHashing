@@ -3,38 +3,19 @@
 #include <string.h>
 #include "InputUtil.h"
 #include "PoorMansHashTable.h"
+#include "ShingleUtil.h"
 
 int main(int argc, char **argv)
 {
+    struct MY_HASH_MAP *shingleSetA = generateKShingleSetOfFile("D:/C-C++/Git/LocalitySensitiveHashing/SampleA.txt", 4);
+    dumpHashMap(shingleSetA);
     
-    char *fileName = "D:/C-C++/SandBox/LocalitySensitiveHashing/Sample.txt";
-    long int outputTextSize = 0;
-    char temp = 't';
-    char *outputBuffer = &temp;
-    char **outputBufferPointer = &outputBuffer;
+    struct MY_HASH_MAP *shingleSetB = generateKShingleSetOfFile("D:/C-C++/Git/LocalitySensitiveHashing/SampleB.txt", 4);
+    dumpHashMap(shingleSetB);
     
-    readInputFile(fileName, &outputTextSize, outputBufferPointer);
-
-    if(outputTextSize == -1)
-    {
-        printf("Program execution halted due to invalid input string.");
-    }
-    
-    long int filteredTextSize = 0;
-    char temp2 = 't';
-    char *filteredBuffer = &temp2;
-    char **filteredBufferPointer = &filteredBuffer;
-    
-    formatInputText(outputTextSize, outputBuffer, &filteredTextSize, filteredBufferPointer);
-    
-    printf("text size: %lu\n", filteredTextSize);
-    
-    struct MY_HASH_MAP *shingleSet = newMyHashMap();
-    
-    printf("test>%lu",getHashValue("test"));
-    
-    int long isFist = insert("yippe", shingleSet);
-    int long isSec = insert("yippe",shingleSet);
-    
+    long int filledA = countFilledSlots(shingleSetA);
+    long int filledB = countFilledSlots(shingleSetB);
+    long int common = commonShingleCount(shingleSetB, shingleSetA);
+    float jaccard = jaccardSimilarity(shingleSetB, shingleSetA);
     return 0;
 }

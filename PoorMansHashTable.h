@@ -9,6 +9,8 @@
 #define CANT_INSERT_VALUE_IN_SET -2
 #define CANT_INSERT_MAP_FULL -3
 #define CANT_INSERT_UNKOWN_ERROR -4
+#define CANT_SEARCH_LONG_STR -5
+#define VALUE_IS_NOT_IN_MAP -6
 
 
 /*
@@ -24,5 +26,8 @@ struct MY_HASH_MAP *newMyHashMap();
 int strLen(char* string);
 long int stringToNum(char* string);
 int long insert(char* string, struct MY_HASH_MAP *myHashMap);
+int long searchValueSlot(char* string, struct MY_HASH_MAP *myHashMap);
+void dumpHashMap(struct MY_HASH_MAP *myHashMap);
+long int countFilledSlots(struct MY_HASH_MAP *myHashMap);
 
 #endif
