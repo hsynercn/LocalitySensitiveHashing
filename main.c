@@ -5,6 +5,8 @@
 #include "PoorMansHashTable.h"
 #include "ShingleUtil.h"
 
+
+
 void minHashTableFromShingleSet(struct MY_HASH_MAP *shingleSetA, struct MY_HASH_MAP *shingleSetB)
 {
     long int filledA = countFilledSlots(shingleSetA);
@@ -12,10 +14,10 @@ void minHashTableFromShingleSet(struct MY_HASH_MAP *shingleSetA, struct MY_HASH_
     long int common = commonShingleCount(shingleSetB, shingleSetA);
     int neededSize = filledA + filledB - common;
     
-    int *vectorA = (int*)malloc(neededSize * sizeof(char));
-    int *vectorB = (int*)malloc(neededSize * sizeof(char));
+    int *vectorA = malloc(neededSize * sizeof(int));
+    int *vectorB = malloc(neededSize * sizeof(int));
     
-    char **unifiedSet = (char**)malloc(neededSize * sizeof(char*));
+    char **unifiedSet = malloc(neededSize * sizeof(char*));
     
     if(unifiedSet == NULL)
     {
@@ -25,7 +27,12 @@ void minHashTableFromShingleSet(struct MY_HASH_MAP *shingleSetA, struct MY_HASH_
     
     for(int i=0;i<neededSize;i++)
     {
-        unifiedSet[i] = (char*)malloc(SHINGLE_MAX_STR_LEN * sizeof(char*));
+        unifiedSet[i] = malloc(SHINGLE_MAX_STR_LEN * sizeof(char));
+        if(unifiedSet[i]==NULL)
+        {
+            printf("Cant allocate memeroy!");
+            exit(1);
+        }
         unifiedSet[i][0] = EMPTY_CHAR;
         unifiedSet[i][1] = EMPTY_CHAR;
         unifiedSet[i][2] = EMPTY_CHAR;
@@ -66,10 +73,10 @@ void minHashTableFromShingleSet(struct MY_HASH_MAP *shingleSetA, struct MY_HASH_
             strncpy(unifiedSet[counter], shingleSetA->values[i], strSize);
             unifiedSet[counter][strSize] = '\0';
             
-            vectorA[i] = 1;
+            vectorA[counter] = 1;
             if(searchValueSlot(unifiedSet[counter],shingleSetB)>0)
             {
-                vectorB[i] = 1;
+                vectorB[counter] = 1;
             }
             counter++;
         }
@@ -84,7 +91,7 @@ void minHashTableFromShingleSet(struct MY_HASH_MAP *shingleSetA, struct MY_HASH_
                 int strSize =  strLen(shingleSetB->values[i]);
                 strncpy(unifiedSet[counter], shingleSetA->values[i], strSize);
                 unifiedSet[counter][strSize] = '\0';
-                vectorB[i] = 1;
+                vectorB[counter] = 1;
                 counter++;
             }
         }
@@ -106,10 +113,10 @@ int main(int argc, char **argv)
     struct MY_HASH_MAP *shingleSetB = generateKShingleSetOfFile("D:/C-C++/Git/LocalitySensitiveHashing/SampleB.txt", 4);
     dumpHashMap(shingleSetB);
     
-    /*long int filledA = countFilledSlots(shingleSetA);
+    long int filledA = countFilledSlots(shingleSetA);
     long int filledB = countFilledSlots(shingleSetB);
     long int common = commonShingleCount(shingleSetB, shingleSetA);
-    float jaccard = jaccardSimilarity(shingleSetB, shingleSetA);*/
+    float jaccard = jaccardSimilarity(shingleSetB, shingleSetA);
     
     minHashTableFromShingleSet(shingleSetA, shingleSetB);
     
