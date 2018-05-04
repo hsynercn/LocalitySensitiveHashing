@@ -15,7 +15,7 @@ void minHashTableFromShingleSet(struct MY_HASH_MAP *shingleSetA, struct MY_HASH_
     int *vectorA = (int*)malloc(neededSize * sizeof(char));
     int *vectorB = (int*)malloc(neededSize * sizeof(char));
     
-    char **unifiedSet = (char**)malloc(neededSize * sizeof(char*) * SHINGLE_MAX_STR_LEN);
+    char **unifiedSet = (char**)malloc(neededSize * sizeof(char*));
     
     if(unifiedSet == NULL)
     {
@@ -25,6 +25,7 @@ void minHashTableFromShingleSet(struct MY_HASH_MAP *shingleSetA, struct MY_HASH_
     
     for(int i=0;i<neededSize;i++)
     {
+        unifiedSet[i] = (char*)malloc(SHINGLE_MAX_STR_LEN * sizeof(char*));
         unifiedSet[i][0] = EMPTY_CHAR;
         unifiedSet[i][1] = EMPTY_CHAR;
         unifiedSet[i][2] = EMPTY_CHAR;
