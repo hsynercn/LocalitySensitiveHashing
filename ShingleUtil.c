@@ -4,7 +4,7 @@
 struct MY_HASH_MAP *generateKShingleSet(long int stringLen, char* string, int k)
 {
     struct MY_HASH_MAP *shingleSet = newMyHashMap();
-    char *kWindow = malloc((k+1) * sizeof(char));
+    char *kWindow = (char*)malloc((k+1) * sizeof(char));
     for(int i=0;i<(stringLen-k);i++)
     {
         for(int j=0;j<k;j++)
@@ -40,6 +40,8 @@ struct MY_HASH_MAP *generateKShingleSetOfFile(char *fileName, int k)
     formatInputText(outputTextSize, outputBuffer, &filteredTextSize, filteredBufferPointer);
     struct MY_HASH_MAP *shingleSet = generateKShingleSet(filteredTextSize, filteredBuffer, k);
     
+    free(outputBuffer);
+    free(filteredBuffer);
     //dumpHashMap(shingleSet);
     return shingleSet;
 }
