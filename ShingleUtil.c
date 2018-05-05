@@ -1,5 +1,32 @@
 #include "ShingleUtil.h"
 #include "PoorMansHashTable.h"
+#include <stdlib.h>
+#include <limits.h>
+
+int *initializeEmptySignature(int singatureLen)
+{
+    int *signatureA = malloc(singatureLen * sizeof(int));
+    for(int i=0;i<singatureLen;i++)
+    {
+        signatureA[i] = INT_MAX;
+    }
+    return signatureA;
+}
+
+int *initilizeSignatureHashConstants(int singatureLen, int valueLimit)
+{
+    int *hashFunctionConstants = malloc(singatureLen * sizeof(int));
+    if(hashFunctionConstants == NULL)
+    {
+        printf("Memory allocation failed!");
+        exit(1);
+    }
+    for(int i=0;i<singatureLen;i++)
+    {
+        hashFunctionConstants[i] = rand()%valueLimit;
+    }
+    return hashFunctionConstants;
+}
 
 struct MY_HASH_MAP *generateKShingleSet(long int stringLen, char* string, int k)
 {
@@ -68,6 +95,13 @@ float jaccardSimilarity(struct MY_HASH_MAP *shingleSetA,  struct MY_HASH_MAP *sh
     long int filledA = countFilledSlots(shingleSetA);
     long int filledB = countFilledSlots(shingleSetB);
     long int common = commonShingleCount(shingleSetB, shingleSetA);
-    
     return (float)common/(float)(filledA + filledB - common);
+}
+
+int getUnifiedSetCount(struct MY_HASH_MAP *shingleSetA, struct MY_HASH_MAP *shingleSetB)
+{
+    long int filledA = countFilledSlots(shingleSetA);
+    long int filledB = countFilledSlots(shingleSetB);
+    long int common = commonShingleCount(shingleSetB, shingleSetA);
+    return filledA + filledB - common;
 }
