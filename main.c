@@ -5,7 +5,7 @@
 #include "PoorMansHashTable.h"
 #include "ShingleUtil.h"
 
-void minHashTableFromShingleSet(struct MY_HASH_MAP *shingleSetA, struct MY_HASH_MAP *shingleSetB)
+float minHashTableFromShingleSet(struct MY_HASH_MAP *shingleSetA, struct MY_HASH_MAP *shingleSetB)
 {
     int neededSize = getUnifiedSetCount(shingleSetA, shingleSetB);
     
@@ -17,7 +17,7 @@ void minHashTableFromShingleSet(struct MY_HASH_MAP *shingleSetA, struct MY_HASH_
     if(unifiedSet == NULL)
     {
         printf("Memory allocation problem.");
-        return;
+        exit(1);
     }
     
     for(int i=0;i<neededSize;i++)
@@ -72,27 +72,22 @@ void minHashTableFromShingleSet(struct MY_HASH_MAP *shingleSetA, struct MY_HASH_
         }
     }
     
-    printf("filledCounter:%d\n",counter);
+    /*printf("filledCounter:%d\n",counter);
     for(int i=0;i<neededSize;i++)
     {
         printf("set:%d key>%s< A:%d B:%d\n",i , unifiedSet[i], vectorA[i], vectorB[i]);
-    }
+    }*/
     
     int unifiedSetCount = neededSize;
     
     int *hashFunctionConstants = initilizeSignatureHashConstants(SIGNATURE_LENGTH, unifiedSetCount);
-    
-    for(int i=0;i<SIGNATURE_LENGTH;i++)
-    {
-        printf("const %d : %d\n",i,hashFunctionConstants[i]);
-    }
     
     int *signatureA = initializeEmptySignature(SIGNATURE_LENGTH);
     int *signatureB = initializeEmptySignature(SIGNATURE_LENGTH);
     
     for(int i=0;i<unifiedSetCount;i++)
     {
-        printf("vectorA[ %d ]:%d   vectorA[ %d ]:%d\n ",i,vectorA[i],i,vectorB[i]);
+        //printf("vectorA[ %d ]:%d   vectorA[ %d ]:%d\n ",i,vectorA[i],i,vectorB[i]);
         
         if(vectorA[i]!=0)
         {
@@ -100,11 +95,11 @@ void minHashTableFromShingleSet(struct MY_HASH_MAP *shingleSetA, struct MY_HASH_
             {
                 int selectedSetLocation = (hashFunctionConstants[signatureDigit]*(i+1) + 1)%unifiedSetCount;
                 
-                printf("signatureDigit:%d  SetLocation:%d\n",signatureDigit,selectedSetLocation);
+                //printf("signatureDigit:%d  SetLocation:%d\n",signatureDigit,selectedSetLocation);
                 int temp = signatureA[signatureDigit];
                 if(signatureA[signatureDigit]>selectedSetLocation)
                 {
-                    printf("sig:%d select:%d\n",signatureA[signatureDigit],selectedSetLocation);
+                    //printf("sig:%d select:%d\n",signatureA[signatureDigit],selectedSetLocation);
                     signatureA[signatureDigit] = selectedSetLocation;
                 }
             }
@@ -116,43 +111,69 @@ void minHashTableFromShingleSet(struct MY_HASH_MAP *shingleSetA, struct MY_HASH_
             {
                 int selectedSetLocation = (hashFunctionConstants[signatureDigit]*(i+1) + 1)%unifiedSetCount;
                 
-                printf("signatureDigit:%d  SetLocation:%d\n",signatureDigit,selectedSetLocation);
+                //printf("signatureDigit:%d  SetLocation:%d\n",signatureDigit,selectedSetLocation);
                 int temp = signatureA[signatureDigit];
                 if(signatureB[signatureDigit]>selectedSetLocation)
                 {
-                    printf("sig:%d select:%d\n",signatureB[signatureDigit],selectedSetLocation);
+                    //printf("sig:%d select:%d\n",signatureB[signatureDigit],selectedSetLocation);
                     signatureB[signatureDigit] = selectedSetLocation;
                 }
             }
         }
     }
-    int signatureSimilarity = 0;
+    int differance = 0;
+    printf("Signatures:\n");
     for(int i=0;i<SIGNATURE_LENGTH;i++)
     {
         if(signatureA[i]!=signatureB[i])
         {
-            signatureSimilarity++;
+            differance++;
         }
         printf("i: %d  sigA: %d  sigB: %d\n",i,signatureA[i],signatureB[i]);
     }
-    printf("differance %d / %d",signatureSimilarity,SIGNATURE_LENGTH);
-    
-    return;
+    //printf("Minhash simlarity %d / %d",SIGNATURE_LENGTH-differance,SIGNATURE_LENGTH);
+    return (float)(SIGNATURE_LENGTH-differance)/SIGNATURE_LENGTH;
 }
 
 int main(int argc, char **argv)
 {
-    struct MY_HASH_MAP *shingleSetA = generateKShingleSetOfFile("D:/C-C++/Git/LocalitySensitiveHashing/SampleA.txt", 4);
+    char fileNameA[300], fileNameB[300];
+    int k=0;
+    
+    printf("Enter K: \n");
+    scanf("%d", &k);
+    
+    if(k<1 || k>(SHINGLE_MAX_STR_LEN-1))
+    {
+        printf("K should be between 1 and 8!");
+        return 0;
+    }
+    
+    printf("Enter first file name with path: \n");
+    scanf("%s", fileNameA);
+    
+    printf("Enter second file name with path: \n");
+    scanf("%s", fileNameB);
+    
+    struct MY_HASH_MAP *shingleSetA = generateKShingleSetOfFile(fileNameA, 8);
     //dumpHashMap(shingleSetA);
     
-    struct MY_HASH_MAP *shingleSetB = generateKShingleSetOfFile("D:/C-C++/Git/LocalitySensitiveHashing/SampleE.txt", 4);
+    struct MY_HASH_MAP *shingleSetB = generateKShingleSetOfFile(fileNameB, 8);
     //dumpHashMap(shingleSetB);
     
+    long int filledA = countFilledSlots(shingleSetA);
+    long int filledB = countFilledSlots(shingleSetB);
+    long int common = commonShingleCount(shingleSetB, shingleSetA);
+    
+    printf("set A: %lu  set B: %lu  common: %lu\n",filledA,filledB,common);
 
     float jaccard = jaccardSimilarity(shingleSetB, shingleSetA);
-    printf("Jaccard:%f\n", jaccard);
+    printf("Jaccard similarity:%f\n", jaccard);
     
-    minHashTableFromShingleSet(shingleSetA, shingleSetB);
+    printf("Minhash simlarity %f",minHashTableFromShingleSet(shingleSetA, shingleSetB));
     
+    int c;
+    
+    scanf("%c",&c);scanf("%c",&c);
     return 0;
 }

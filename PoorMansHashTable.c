@@ -122,6 +122,7 @@ int long insert(char* string, struct MY_HASH_MAP *myHashMap)
                 if(len>SHINGLE_MAX_STR_LEN)
                 {
                     printf("Can't insert the value, exceeds SHINGLE_MAX_STR_LEN.");
+                    exit(1);
                     return CANT_INSERT_LONG_STR;
                 }
                 myHashMap->keys[slotIterator%SHINGLE_SET_MAP_SIZE] = slotIterator%SHINGLE_SET_MAP_SIZE;
@@ -159,7 +160,7 @@ int long searchValueSlot(char* string, struct MY_HASH_MAP *myHashMap)
     int len = strLen(string);
     if(len>SHINGLE_MAX_STR_LEN)
     {
-        printf("Can't insert the value, exceeds SHINGLE_MAX_STR_LEN.");
+        printf("String exceeds SHINGLE_MAX_STR_LEN.");
         return CANT_SEARCH_LONG_STR;
     }
     long int slotNum = getHashValue(string)%SHINGLE_SET_MAP_SIZE;
